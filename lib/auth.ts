@@ -1,6 +1,6 @@
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { sql } from './db';
+import { getSql } from '@/lib/db';
 import { decryptPassword } from './crypto';
 
 export const authOptions: NextAuthOptions = {
@@ -14,7 +14,7 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const users = await sql('SELECT * FROM users WHERE email = $1', [credentials.email]);
+        const users = await getSql()('SELECT * FROM users WHERE email = $1', [credentials.email]);
         if (!users || users.length === 0) return null;
 
         const user = users[0];
