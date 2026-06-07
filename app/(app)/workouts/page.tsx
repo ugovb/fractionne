@@ -1,4 +1,5 @@
 'use client';
+import { Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -11,7 +12,7 @@ interface Workout {
   restDuration: number;
 }
 
-export default function WorkoutsPage() {
+function WorkoutsContent() {
   const { data: session } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -153,5 +154,21 @@ export default function WorkoutsPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+function WorkoutsLoading() {
+  return (
+    <div style={{ background: '#000', color: '#fff', minHeight: '100dvh', fontFamily: 'IBM Plex Mono, monospace', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <span style={{ fontSize: '11px', letterSpacing: '0.2em', color: '#888' }}>LOADING...</span>
+    </div>
+  );
+}
+
+export default function WorkoutsPage() {
+  return (
+    <Suspense fallback={<WorkoutsLoading />}>
+      <WorkoutsContent />
+    </Suspense>
   );
 }

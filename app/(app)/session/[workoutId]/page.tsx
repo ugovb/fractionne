@@ -1,9 +1,10 @@
 'use client';
+import { Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 
-export default function SessionPage() {
+function SessionContent() {
   const { data: session } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -126,5 +127,21 @@ export default function SessionPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+function SessionLoading() {
+  return (
+    <div style={{ background: '#000', color: '#fff', minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'IBM Plex Mono, monospace' }}>
+      <span style={{ fontSize: '11px', letterSpacing: '0.2em', color: '#888' }}>LOADING...</span>
+    </div>
+  );
+}
+
+export default function SessionPage() {
+  return (
+    <Suspense fallback={<SessionLoading />}>
+      <SessionContent />
+    </Suspense>
   );
 }
