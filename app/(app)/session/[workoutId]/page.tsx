@@ -87,7 +87,13 @@ export default function SessionPage() {
   };
 
   const stopTimer = () => {
-    if (timerRef.current) timerRef.current.stop();
+    if (timerRef.current) {
+      const elapsed = timerRef.current.getElapsed?.() || 0;
+      timerRef.current.stop();
+      if (elapsed > 5) {
+        saveSession(null, { cycle: cycle, totalDuration: elapsed, completed: false });
+      }
+    }
     router.push('/app');
   };
 

@@ -116,4 +116,10 @@ export class WorkoutTimer {
     this.cycle = 0;
     this.pausedElapsed = 0;
   }
+
+  getElapsed(): number {
+    if (this.phase === 'complete' || this.phase === 'idle') return 0;
+    const currentElapsed = this.phase === 'paused' ? 0 : (performance.now() - this.phaseStartTime);
+    return this.pausedElapsed + currentElapsed;
+  }
 }

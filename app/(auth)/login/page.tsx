@@ -110,6 +110,23 @@ export default function LoginPage() {
         >
           SIGN IN
         </button>
+        <p style={{ textAlign: "center", fontSize: "12px", color: "#666" }}>
+          No account?{" "}
+          <button
+            onClick={() => router.push("/register")}
+            style={{
+              background: "none",
+              border: "none",
+              color: "#fff",
+              fontFamily: "IBM Plex Mono, monospace",
+              fontSize: "12px",
+              cursor: "pointer",
+              textDecoration: "underline",
+            }}
+          >
+            Create one
+          </button>
+        </p>
       </form>
     </div>
   );
