@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { sql } from '@/lib/db';
+import { getSql } from '@/lib/db';
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
   const profileId = req.nextUrl.searchParams.get('profileId');
   if (!profileId) return NextResponse.json({ error: 'profileId required' }, { status: 400 });
 
-  const workouts = await sql(
+  const workouts = await getSql()(
     'SELECT * FROM workouts WHERE profile_id = $1 ORDER BY created_at DESC',
     [profileId]
   );
@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
 
   const { profileId, name, cycles, runDuration, restDuration, warmUpDuration, coolDownDuration } = await req.json();
 
-  const result = await sql(
+  const result = await getSql()(
     `INSERT INTO workouts (profile_id, name, cycles, run_duration, rest_duration, warm_up_duration, cool_down_duration)
      VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
     [profileId, name, cycles, runDuration, restDuration, warmUpDuration || 0, coolDownDuration || 0]

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { sql } from '@/lib/db';
+import { getSql } from '@/lib/db';
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -11,28 +11,28 @@ export async function GET() {
   weekStart.setDate(weekStart.getDate() - weekStart.getDay());
   weekStart.setHours(0, 0, 0, 0);
 
-  const weekMinutes = await sql(
+  const weekMinutes = await getSql()(
     `SELECT COALESCE(SUM(total_duration), 0) as minutes FROM sessions
      WHERE user_id = $1 AND completed_at >= $2 AND completed = true`,
     [session.user.id, weekStart.toISOString()]
   );
 
-  const totalSessions = await sql(
+  const totalSessions = await getSql()(
     `SELECT COUNT(*) as count FROM sessions WHERE user_id = $1 AND completed = true`,
     [session.user.id]
   );
 
-  const totalMinutes = await sql(
+  const totalMinutes = await getSql()(
     `SELECT COALESCE(SUM(total_duration), 0) as minutes FROM sessions WHERE user_id = $1 AND completed = true`,
     [session.user.id]
   );
 
-  const longestSession = await sql(
+  const longestSession = await getSql()(
     `SELECT COALESCE(MAX(total_duration), 0) as seconds FROM sessions WHERE user_id = $1 AND completed = true`,
     [session.user.id]
   );
 
-  const mostUsed = await sql(
+  const mostUsed = await getSql()(
     `SELECT w.name, COUNT(*) as count FROM sessions s
      JOIN workouts w ON s.workout_id = w.id
      WHERE s.user_id = $1 AND s.completed = true
@@ -40,7 +40,7 @@ export async function GET() {
     [session.user.id]
   );
 
-  const avgDuration = await sql(
+  const avgDuration = await getSql()(
     `SELECT COALESCE(AVG(total_duration), 0) as avg FROM sessions WHERE user_id = $1 AND completed = true`,
     [session.user.id]
   );

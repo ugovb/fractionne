@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sql } from '@/lib/db';
+import { getSql } from '@/lib/db';
 import { encryptPassword } from '@/lib/crypto';
 
 export async function POST(req: NextRequest) {
@@ -14,13 +14,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Password must be at least 6 characters' }, { status: 400 });
     }
 
-    const existing = await sql('SELECT id FROM users WHERE email = $1', [email]);
+    const existing = await getSql()('SELECT id FROM users WHERE email = $1', [email]);
     if (existing.length > 0) {
       return NextResponse.json({ error: 'Email already registered' }, { status: 400 });
     }
 
     const encrypted = encryptPassword(password);
-    const result = await sql(
+    const result = await getSql()(
       'INSERT INTO users (email, password_encrypted, name, role) VALUES ($1, $2, $3, $4) RETURNING id, email, name, role',
       [email, encrypted, name, 'athlete']
     );
